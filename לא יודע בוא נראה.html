@@ -1,0 +1,818 @@
+<!DOCTYPE html><html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>הידעת?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Rubik',sans-serif;
+}body{ background:linear-gradient(180deg,#13092d,#24104f,#31166a); color:white; overflow-x:hidden; }
+
+header{ padding:30px 20px; text-align:center; position:relative; }
+
+.glow{ position:absolute; width:220px; height:220px; background:#ff4fd8; filter:blur(90px); opacity:.35; border-radius:50%; top:-100px; right:-80px; z-index:-1; }
+
+.glow2{ position:absolute; width:220px; height:220px; background:#63d7ff; filter:blur(90px); opacity:.35; border-radius:50%; bottom:-100px; left:-80px; z-index:-1; }
+
+h1 { font-size:48px; margin-bottom:10px; background:linear-gradient(90deg, #ff7bd5, #7ad9ff); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+
+.subtitle{ font-size:16px; color:#ddd; line-height:1.7; }
+
+nav{ display:flex; justify-content:center; flex-wrap:wrap; gap:12px; padding:10px 20px 30px; }
+
+nav button{ border:none; padding:12px 18px; border-radius:16px; background:rgba(255,255,255,0.1); color:white; font-size:14px; cursor:pointer; backdrop-filter:blur(8px); transition:.25s; }
+
+nav button:hover{ transform:translateY(-3px) scale(1.03); background:linear-gradient(135deg,#ff5ec7,#6f91ff); }
+
+.page{ display:none; padding:20px; max-width:900px; margin:auto; animation:fade .4s ease; }
+
+.active{ display:block; }
+
+.card{ background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12); border-radius:28px; padding:22px; margin-bottom:20px; backdrop-filter:blur(12px); box-shadow:0 8px 30px rgba(0,0,0,0.25); }
+
+.card h2{ margin-bottom:14px; font-size:28px; }
+
+.card p{ line-height:1.7; color:#ddd; }
+
+input, textarea, select{ width:100%; padding:14px; margin-top:12px; border:none; border-radius:16px; background:rgba(255,255,255,0.1); color:white; font-size:14px; outline:none; }
+
+textarea{ min-height:110px; resize:vertical; }
+
+button.main{ margin-top:14px; padding:14px 18px; border:none; border-radius:16px; background:linear-gradient(135deg,#ff67cf,#7793ff); color:white; font-weight:bold; cursor:pointer; transition:.2s; }
+
+button.main:hover{ transform:scale(1.04); }
+
+#wheel{ width:280px; height:280px; border-radius:50%; margin:25px auto; border:10px solid rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; text-align:center; padding:20px; font-size:22px; background:radial-gradient(circle,#ff7ed8,#7a87ff); transition:transform 3s cubic-bezier(.17,.67,.2,1.02); }
+
+.truth-box{ margin-top:20px; padding:18px; border-radius:20px; background:rgba(255,255,255,0.08); font-size:22px; text-align:center; min-height:70px; }
+
+.quiz-answer{ margin-top:10px; padding:12px; border-radius:14px; background:rgba(255,255,255,0.08); cursor:pointer; transition:.2s; }
+
+.quiz-answer:hover{ background:rgba(255,255,255,0.16); }
+
+canvas{ background:black; border-radius:20px; margin:auto; display:block; width:100%; max-width:400px; }
+
+.fact{ padding:14px; margin-top:12px; border-radius:16px; background:rgba(255,255,255,0.08); }
+
+.riddle{ padding:14px; margin-top:12px; border-radius:16px; background:rgba(255,255,255,0.08); }
+
+@keyframes fade{ from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+@media(max-width:600px){ h1{ font-size:36px; }
+
+.card h2{ font-size:22px; } } </style>
+
+</head>
+<body><header>
+<div class="glow"></div>
+<div class="glow2"></div>
+<h1>הידעת?</h1>
+<p class="subtitle">ערוץ הידעת מהווצאפ עכשיו גם באתר!</p>
+</header><nav>
+<button onclick="showPage('home')">בית</button>
+<button onclick="showPage('games')">משחקים</button>
+<button onclick="showPage('facts')">עובדות</button>
+<button onclick="showPage('riddles')">חידות</button>
+<button onclick="showPage('random')">סתם</button>
+<button onclick="adminLogin()">🔒 מנהל</button>
+</nav><section id="home" class="page active">
+<div class="card">
+<h2>✨ ברוכים הבאים</h2>
+<p>
+ברוכים הבאים לאתר האנימה של "הידעת?"!
+כאן תוכלו לשחק, ליצור חידונים משלכם,
+לגלות עובדות חדשות ולהעביר את הזמן בכיף.
+</p>
+<div class="card">
+    <h2>📢 הודעות מהמנהלים</h2>
+
+    <div class="admin-only" style="display:none;">
+
+        <input id="newsTitle"
+               placeholder="כותרת הודעה">
+
+        <textarea id="newsText"
+                  placeholder="תוכן ההודעה"></textarea>
+
+        <button class="main"
+                onclick="addNews()">
+            פרסם הודעה
+        </button>
+
+    </div>
+
+    <div id="newsContainer"></div>
+
+</div>
+<div class="card">
+
+    <h2>⭐ מומלץ היום</h2>
+
+    <div class="admin-only" style="display:none;">
+
+        <select id="linkType">
+            <option value="fact">עובדה</option>
+            <option value="riddle">חידה</option>
+        </select>
+
+        <input id="linkTitle"
+               placeholder="שם הכפתור">
+
+        <button class="main"
+                onclick="addQuickLink()">
+            הוסף קישור
+        </button>
+
+    </div>
+
+    <div id="quickLinks"></div>
+
+</div>
+<button class="main" onclick="showPage('games')">לעמוד המשחקים 🎮</button>
+</div>
+</section><section id="games" class="page">
+<div class="card">
+<h2>🎡 גלגל המזל</h2>
+<textarea id="wheelInput" placeholder="כתוב אפשרויות, כל אחת בשורה חדשה"></textarea>
+<button class="main" onclick="spinWheel()">סובב גלגל</button>
+<div id="wheel">?</div>
+</div><div class="card">
+<h2>🤔 אמת או שקר</h2>
+<textarea id="truthInput" placeholder="כתוב משפטים, כל אחד בשורה חדשה"></textarea>
+<button class="main" onclick="randomTruth()">בחר אקראי</button>
+<div class="truth-box" id="truthBox">...</div>
+</div><div class="card">
+<h2>🧠 חידון על עצמי</h2>
+<input id="quizQuestion" placeholder="שאלה">
+<input id="correctAnswer" placeholder="תשובה נכונה">
+<input id="wrongAnswer1" placeholder="תשובה לא נכונה">
+<input id="wrongAnswer2" placeholder="עוד תשובה לא נכונה">
+<button class="main" onclick="saveQuiz()">שמור שאלה</button>
+<button class="main" onclick="playQuiz()">התחל חידון</button>
+<div id="quizArea"></div>
+</div><div class="card">
+<h2>👾 Pac-Man (1980)</h2>
+
+<p style="margin-bottom:15px;color:#ddd">
+אחד המשחקים המשפיעים ביותר בהיסטוריה. הוא הוכיח שמשחקי וידאו יכולים לפנות לקהל רחב והפך לאייקון עולמי.
+</p>
+
+<button class="main" onclick="startPacman()">
+▶️ התחל משחק
+</button>
+
+<canvas id="pacman" width="400" height="400"></canvas>
+<div style="text-align:center;margin-top:15px;">
+    <button onclick="movePacman('up')">⬆️</button><br><br>
+
+    <button onclick="movePacman('left')">⬅️</button>
+
+    <button onclick="movePacman('down')">⬇️</button>
+
+    <button onclick="movePacman('right')">➡️</button>
+</div>
+
+<div id="score" style="margin-top:15px;font-size:20px;text-align:center">
+ניקוד: 0
+</div>
+<div class="card">
+
+<h2>🎾 Tennis for Two (1958)</h2>
+
+<p style="margin-bottom:15px;color:#ddd">
+אחד ממשחקי הווידאו הראשונים אי פעם, שנוצר כדי להדגים משחק אלקטרוני מהנה לקהל.
+</p>
+
+<canvas id="tennis" width="500" height="250"></canvas>
+
+</div>
+</div>
+</section><section id="facts" class="page">
+<div class="card">
+<h2>📚 עובדות מעניינות</h2>
+<div class="admin-only" style="display:none;">
+    <input id="factInput" placeholder="הוסף עובדה חדשה">
+    <button class="main" onclick="addFact()">הוסף עובדה</button>
+</div>
+<div id="factsContainer">
+<div class="fact" id="fact1">
+🐙 לתמנון יש שלושה לבבות.
+</div>
+<div class="fact" id="fact2">
+🌌 יש יותר כוכבים ביקום מגרגרי חול בכדור הארץ.
+</div>
+
+<div class="fact" id="fact3">
+🦒 ג'ירפה ישנה בערך שעתיים ביום.
+</div>
+
+<div class="fact" id="fact4">
+🍯 דבש לא מתקלקל כמעט אף פעם.
+</div>
+</div>
+</div>
+</section><section id="riddles" class="page">
+<div class="card">
+<h2>❓ חידות</h2>
+<div class="admin-only" style="display:none;">
+    <input id="riddleQuestion" placeholder="כתוב חידה">
+    <input id="riddleAnswer" placeholder="כתוב תשובה">
+    <button class="main" onclick="addRiddle()">הוסף חידה</button>
+</div>
+<div id="riddlesContainer">
+<div class="riddle" id="riddle1">
+מה נשבר בלי שנוגעים בו?
+<br>
+<b>תשובה:</b> הבטחה.
+</div>
+<div class="riddle" id="riddle1">
+מה עולה אבל לא יורד?
+<br>
+<b>תשובה:</b> הגיל.
+</div>
+<div class="riddle" id="riddle1">
+מה נהיה רטוב ככל שהוא מייבש יותר?
+<br>
+<b>תשובה:</b> מגבת.
+</div>
+</div>
+</div>
+</section><section id="random" class="page">
+<div class="card">
+<h2>🎴 סתם</h2>
+<p>
+לפעמים צריך גם סתם מקום כיפי באתר 😄
+</p>
+<button class="main" onclick="animeMessage()">הודעת אנימה אקראית</button>
+<div class="truth-box" id="animeMessageBox">✨</div>
+</div>
+</section><script>
+function showPage(id){
+const pages=document.querySelectorAll('.page');
+pages.forEach(p=>p.classList.remove('active'));
+document.getElementById(id).classList.add('active');
+}
+
+function spinWheel(){
+const input=document.getElementById('wheelInput').value.split('\n').filter(x=>x.trim()!='');
+if(input.length===0)return;
+const wheel=document.getElementById('wheel');
+const random=input[Math.floor(Math.random()*input.length)];
+const deg=1080+Math.random()*360;
+wheel.style.transform=`rotate(${deg}deg)`;
+setTimeout(()=>{
+wheel.innerHTML=random;
+},3000);
+}
+
+function randomTruth(){
+const input=document.getElementById('truthInput').value.split('\n').filter(x=>x.trim()!='');
+if(input.length===0)return;
+const item=input[Math.floor(Math.random()*input.length)];
+document.getElementById('truthBox').innerHTML=item;
+}
+
+let quizzes=[];
+
+function saveQuiz(){
+const q=document.getElementById('quizQuestion').value;
+const c=document.getElementById('correctAnswer').value;
+const w1=document.getElementById('wrongAnswer1').value;
+const w2=document.getElementById('wrongAnswer2').value;
+
+if(!q||!c||!w1||!w2)return;
+
+quizzes.push({
+question:q,
+correct:c,
+answers:[c,w1,w2].sort(()=>Math.random()-0.5)
+});
+
+alert('השאלה נשמרה!');
+}
+
+function playQuiz(){
+if(quizzes.length===0)return;
+const q=quizzes[Math.floor(Math.random()*quizzes.length)];
+const area=document.getElementById('quizArea');
+
+area.innerHTML=`<h3 style="margin-top:18px">${q.question}</h3>`;
+
+q.answers.forEach(ans=>{
+const div=document.createElement('div');
+div.className='quiz-answer';
+div.innerHTML=ans;
+div.onclick=()=>{
+if(ans===q.correct){
+alert('🎉 נכון!');
+}else{
+alert('❌ לא נכון');
+}
+};
+area.appendChild(div);
+});
+}
+
+function animeMessage(){
+const messages=[
+'⚡ אל תוותר גם אם קשה!',
+'🌸 דמות ראשית אף פעם לא נכנעת.',
+'🔥 היום זה היום שלך לזהור.',
+'💫 גם טעויות מובילות לניצחון.',
+'🎌 כוח אמיתי בא מבפנים.'
+];
+
+const random=messages[Math.floor(Math.random()*messages.length)];
+document.getElementById('animeMessageBox').innerHTML=random;
+}
+
+const canvas=document.getElementById('pacman');
+const ctx=canvas.getContext('2d');
+
+let pacman={
+ x:50,
+ y:50,
+ size:20,
+ dx:0,
+ dy:0,
+ direction:'right'
+};
+let score=0;
+let gameRunning=false;
+let food=[];
+let ghosts=[
+ {x:380,y:20,color:'red'},
+ {x:380,y:380,color:'cyan'},
+ {x:20,y:380,color:'pink'}
+];
+for(let i=0;i<20;i++){
+food.push({
+x:Math.random()*380,
+y:Math.random()*380,
+eaten:false
+});
+}
+
+function drawPacman(){
+
+let start,end;
+
+if(pacman.direction==='right'){
+ start=0.2*Math.PI;
+ end=1.8*Math.PI;
+}
+
+if(pacman.direction==='left'){
+ start=1.2*Math.PI;
+ end=0.8*Math.PI;
+}
+
+if(pacman.direction==='up'){
+ start=1.7*Math.PI;
+ end=1.3*Math.PI;
+}
+
+if(pacman.direction==='down'){
+ start=0.7*Math.PI;
+ end=0.3*Math.PI;
+}
+
+ctx.beginPath();
+ctx.arc(
+ pacman.x,
+ pacman.y,
+ pacman.size,
+ start,
+ end
+);
+
+ctx.lineTo(
+ pacman.x,
+ pacman.y
+);
+
+ctx.fillStyle='yellow';
+ctx.fill();
+}
+
+function drawFood(){
+food.forEach(f=>{
+if(!f.eaten){
+ctx.beginPath();
+ctx.arc(f.x,f.y,4,0,Math.PI*2);
+ctx.fillStyle='white';
+ctx.fill();
+}
+});
+}
+
+function drawGhosts(){
+
+ ghosts.forEach(g=>{
+
+  ctx.beginPath();
+
+  ctx.arc(
+   g.x,
+   g.y,
+   15,
+   0,
+   Math.PI*2
+  );
+
+  ctx.fillStyle=g.color;
+  ctx.fill();
+
+ });
+
+}
+
+function update(){
+
+ if(!gameRunning){
+   return;
+ }
+
+ ctx.clearRect(0,0,400,400);
+
+ pacman.x += pacman.dx;
+ pacman.y += pacman.dy;
+
+ if(pacman.x<0) pacman.x=400;
+ if(pacman.x>400) pacman.x=0;
+ if(pacman.y<0) pacman.y=400;
+ if(pacman.y>400) pacman.y=0;
+
+ food.forEach(f=>{
+
+   const dist=Math.hypot(
+     pacman.x-f.x,
+     pacman.y-f.y
+   );
+
+   if(dist<20 && !f.eaten){
+
+     f.eaten=true;
+     score++;
+
+     document.getElementById('score').innerHTML=
+       'ניקוד: '+score;
+   }
+
+ });
+
+ ghosts.forEach(g=>{
+
+   if(g.x<pacman.x) g.x+=0.5;
+   if(g.x>pacman.x) g.x-=0.5;
+
+   if(g.y<pacman.y) g.y+=0.5;
+   if(g.y>pacman.y) g.y-=0.5;
+
+   const hit=Math.hypot(
+     pacman.x-g.x,
+     pacman.y-g.y
+   );
+
+if(hit<25){
+
+  alert('👻 הפסדת!');
+
+  gameRunning=false;
+
+  pacman.x=50;
+  pacman.y=50;
+
+  pacman.dx=0;
+  pacman.dy=0;
+
+  ghosts[0].x=380;
+  ghosts[0].y=20;
+
+  ghosts[1].x=380;
+  ghosts[1].y=380;
+
+  ghosts[2].x=20;
+  ghosts[2].y=380;
+
+  return;
+}
+
+ });
+
+ if(food.every(f=>f.eaten)){
+
+    gameRunning=false;
+
+   alert('🏆 ניצחת!');
+ }
+
+ drawFood();
+ drawGhosts();
+ drawPacman();
+
+ requestAnimationFrame(update);
+}
+
+window.addEventListener('keydown',e=>{
+
+if([
+'ArrowUp',
+'ArrowDown',
+'ArrowLeft',
+'ArrowRight'
+].includes(e.key)){
+
+ e.preventDefault();
+}
+
+if(e.key==='ArrowUp'){
+ movePacman('up');
+}
+
+if(e.key==='ArrowDown'){
+ movePacman('down');
+}
+
+if(e.key==='ArrowLeft'){
+ movePacman('left');
+}
+
+if(e.key==='ArrowRight'){
+ movePacman('right');
+}
+
+});
+
+function addFact(){
+const input=document.getElementById('factInput');
+const value=input.value.trim();
+if(!value)return;
+
+const div=document.createElement('div');
+div.className='fact';
+div.innerHTML='✨ '+value;
+
+document.getElementById('factsContainer').appendChild(div);
+input.value='';
+}
+
+function addRiddle(){
+const question=document.getElementById('riddleQuestion').value.trim();
+const answer=document.getElementById('riddleAnswer').value.trim();
+
+if(!question||!answer)return;
+
+const div=document.createElement('div');
+div.className='riddle';
+div.innerHTML=`${question} <br><b>תשובה:</b> ${answer}`;
+
+document.getElementById('riddlesContainer').appendChild(div);
+
+document.getElementById('riddleQuestion').value='';
+document.getElementById('riddleAnswer').value='';
+}
+
+function adminLogin(){
+
+    const password = prompt("הכנס סיסמת מנהל");
+
+    if(password === "הידעת מנהלים"){
+
+        document
+            .querySelectorAll(".admin-only")
+            .forEach(el=>{
+                el.style.display = "block";
+            });
+
+        alert("התחברת כמנהל");
+    }
+    else{
+        alert("סיסמה שגויה");
+    }
+}
+
+function addQuickLink(){
+
+    const type=
+        document.getElementById('linkType').value;
+
+    const title=
+        document.getElementById('linkTitle').value;
+
+    if(!title) return;
+
+    const btn=
+        document.createElement('button');
+
+    btn.className='main';
+
+    btn.innerHTML=title;
+
+    btn.onclick=function(){
+
+        if(type==='fact'){
+            showPage('facts');
+
+            setTimeout(()=>{
+                document
+                .getElementById('fact1')
+                ?.scrollIntoView({
+                    behavior:'smooth'
+                });
+            },100);
+        }
+
+        if(type==='riddle'){
+            showPage('riddles');
+
+            setTimeout(()=>{
+                document
+                .getElementById('riddle1')
+                ?.scrollIntoView({
+                    behavior:'smooth'
+                });
+            },100);
+        }
+
+    };
+
+    document
+      .getElementById('quickLinks')
+      .appendChild(btn);
+
+    document
+      .getElementById('linkTitle')
+      .value='';
+}
+
+function addNews(){
+
+    const title=
+        document.getElementById('newsTitle').value;
+
+    const text=
+        document.getElementById('newsText').value;
+
+    if(!title || !text) return;
+
+    const div=document.createElement('div');
+
+    div.className='fact';
+
+    div.innerHTML=`
+        <h3>${title}</h3>
+        <p>${text}</p>
+    `;
+
+    document
+        .getElementById('newsContainer')
+        .prepend(div);
+
+    document.getElementById('newsTitle').value='';
+    document.getElementById('newsText').value='';
+}
+
+function startPacman(){
+
+ if(gameRunning) return;
+
+ gameRunning=true;
+
+ pacman.x=50;
+ pacman.y=50;
+ pacman.dx=0;
+ pacman.dy=0;
+
+ score=0;
+
+ food.forEach(f=>{
+   f.eaten=false;
+ });
+
+ ghosts[0].x=380;
+ ghosts[0].y=20;
+
+ ghosts[1].x=380;
+ ghosts[1].y=380;
+
+ ghosts[2].x=20;
+ ghosts[2].y=380;
+
+ document.getElementById('score').innerHTML=
+   'ניקוד: 0';
+
+ update();
+}
+
+function movePacman(dir){
+
+ if(dir==='up'){
+  pacman.dx=0;
+  pacman.dy=-2;
+  pacman.direction='up';
+ }
+
+ if(dir==='down'){
+  pacman.dx=0;
+  pacman.dy=2;
+  pacman.direction='down';
+ }
+
+ if(dir==='left'){
+  pacman.dx=-2;
+  pacman.dy=0;
+  pacman.direction='left';
+ }
+
+ if(dir==='right'){
+  pacman.dx=2;
+  pacman.dy=0;
+  pacman.direction='right';
+ }
+
+}
+
+const tennisCanvas =
+document.getElementById('tennis');
+
+const tctx =
+tennisCanvas.getContext('2d');
+
+let ball={
+ x:250,
+ y:100,
+ vx:3,
+ vy:-2
+};
+
+function tennisLoop(){
+
+ tctx.clearRect(
+   0,
+   0,
+   tennisCanvas.width,
+   tennisCanvas.height
+ );
+
+ tctx.strokeStyle='white';
+
+ tctx.beginPath();
+
+ tctx.moveTo(
+   tennisCanvas.width/2,
+   0
+ );
+
+ tctx.lineTo(
+   tennisCanvas.width/2,
+   tennisCanvas.height
+ );
+
+ tctx.stroke();
+
+ ball.x+=ball.vx;
+ ball.y+=ball.vy;
+
+ ball.vy+=0.05;
+
+ if(ball.y>220){
+
+   ball.y=220;
+   ball.vy=-Math.abs(ball.vy)*0.9;
+ }
+
+ if(ball.x<0 ||
+    ball.x>tennisCanvas.width){
+
+   ball.vx*=-1;
+ }
+
+ tctx.beginPath();
+
+ tctx.arc(
+   ball.x,
+   ball.y,
+   8,
+   0,
+   Math.PI*2
+ );
+
+ tctx.fillStyle='white';
+ tctx.fill();
+
+ requestAnimationFrame(
+   tennisLoop
+ );
+}
+
+tennisLoop();
+
+</script></body>
+</html>
